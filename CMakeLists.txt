@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(beginner_tutorials)
+project(melex_os)
 
 ## Add support for C++11, supported in ROS Kinetic and newer
 # add_definitions(-std=c++11)
@@ -206,7 +206,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 # Add talker
 ##################################################################################
 
-add_executable(talker src/talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
-add_dependencies(talker beginner_tutorials_generate_messages_cpp)
+add_executable(melex_os src/melex_os.cpp)
+target_link_libraries(melex_os ${catkin_LIBRARIES})
+add_dependencies(melex_os melex_os_generate_messages_cpp)
 
