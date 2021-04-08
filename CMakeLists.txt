@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
   genmsg
 )
 
@@ -48,11 +49,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  CarControl.msg
+  CarState.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -70,6 +71,7 @@ find_package(catkin REQUIRED COMPONENTS
  generate_messages(
    DEPENDENCIES
    std_msgs
+   geometry_msgs
  )
 
 ################################################
@@ -104,8 +106,8 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES beginner_tutorials
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+ CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs
+ #DEPENDS system_lib
 )
 
 ###########
@@ -206,7 +208,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 # Add talker
 ##################################################################################
 
-add_executable(melex_os src/melex_os.cpp)
-target_link_libraries(melex_os ${catkin_LIBRARIES})
+add_executable(melex_os src/melex_driver.cpp)
+target_link_libraries(melex_os ${catkin_LIBRARIES} modbus pigpiod_if2)
 add_dependencies(melex_os melex_os_generate_messages_cpp)
 

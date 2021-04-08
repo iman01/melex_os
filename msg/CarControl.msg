@@ -1,0 +1,5 @@
+float64 refSteeringRate
+float64 refSteeringAngle
+float64 refVelocity
+float64 refAcceleration
+bool autonomyEnabled
