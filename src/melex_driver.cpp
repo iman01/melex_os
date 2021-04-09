@@ -85,11 +85,11 @@ int main(int argc, char **argv)
     double degrees = position/65536.0*360.0;
     if(turns < 0)
     {
-      degrees = 360 - degrees + 360*turns;
+      degrees = 360 - degrees + 360*(turns);
     }
     else
     {
-      degrees + 360*turns;
+      degrees = degrees + 360*(turns);
     }
     double columnAngleRad = 0.0174532925*degrees;
 
