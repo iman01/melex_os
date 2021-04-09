@@ -10,9 +10,9 @@ int main(int argc, char **argv)
 {
   double loopFrequencyHz = 250.0;
   //BCM pin numbering mode
-  int dirPin = 19;
-  int pwmPin = 13;
-  int pwmFreq = 1000;
+  unsigned int dirPin = 19;
+  unsigned int pwmPin = 13;
+  unsigned int pwmFrequency = 1000;
 
   using namespace melex_os;
 
@@ -45,18 +45,66 @@ int main(int argc, char **argv)
     ROS_ERROR("Failed to set up  steering pwm pin");
   }
 
+  if(set_PWM_frequency(pigpioId, pwmPin, pwmFrequency) < 0)
+  {
+    ROS_ERROR("Failed to set up  steering pwm  frequency");
+  }
+
   modbus_t* ctx = modbus_new_rtu("/dev/ttyS0", 19200, 'E', 8, 1);
   if(ctx == NULL)
   {
     ROS_ERROR("Failed to initialize steering encoder modbus interface");
   }
-  
+
+  if(modbus_set_slave(ctx, 127) == -1)
+  {
+    ROS_ERROR("Failed to initialize steering encoder modbus slave");
+  } 
+
+  if(modbus_connect(ctx) == -1)
+  {
+    ROS_ERROR("Failed to connect steering ecnoder modbus slave");
+  }
+
+  //TODO: move to a function when we verify it works
+  uint16_t registers[2];
+  if(modbus_read_registers(ctx, 1, 2, registers) == -1)
+  {
+    ROS_ERROR("Failed to read encoder value.");
+  }
+  else
+  {
+    int turns = registers[0];
+    int position = registers[1];
+    
+    if(turns > 16384)
+    {
+      turns -= 32768;
+    }
+
+    double degrees = position/65536.0*360.0;
+    if(turns < 0)
+    {
+      degrees = 360 - degrees + 360*turns;
+    }
+    else
+    {
+      degrees + 360*turns;
+    }
+    double columnAngleRad = 0.0174532925*degrees;
+
+    ROS_INFO_STREAM("Calibrating steering zero to: " << degrees);
+  }
+
   //control loop
   ROS_INFO("Melex OS driver initialized. Driver is now active.");
   try
   {
     while (ros::ok())
     {
+      
+      //set_PWM_dutycycle 0-255
+      //set direction pin
       rate.sleep();
     }
   }
@@ -66,6 +114,8 @@ int main(int argc, char **argv)
   }
 
   pigpio_stop(pigpioId);
+  modbus_close(ctx);
+  modbus_free(ctx);
 
   ROS_INFO("Melex OS driver exited cleanly.");
   return 0;
