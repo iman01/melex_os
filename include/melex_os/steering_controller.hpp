@@ -19,10 +19,10 @@ namespace melex_os
     double prevSteeringAngle = 0.0;
     
 
-    //TODO: identify
+    //coefficient identified using procedure from scripts/calibrate.py
     double columnToBicycleScaling(double columnRad)
     {
-        return columnRad;
+        return columnRad*0.07607886;
     }
 
     public:
