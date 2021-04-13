@@ -2,6 +2,8 @@
 
 #include <melex_os/pwm.hpp>
 #include <melex_os/steering_encoder.hpp>
+#include <melex_os/digital_filters.hpp>
+#include <melex_os/adrc_eso.hpp>
 
 namespace melex_os
 {
@@ -17,6 +19,10 @@ namespace melex_os
     double kf = 0.5;
 
     double prevSteeringAngle = 0.0;
+    LowPassFilter3 steeringRateFilter;
+    
+    double prevControl = 0.0;
+    SecondOrderESO eso;
     
 
     //coefficient identified using procedure from scripts/calibrate.py
@@ -26,7 +32,10 @@ namespace melex_os
     }
 
     public:
-        SteeringController(int pigpioId, double loopRate, double steeringAngleLimit) : pwm(pigpioId, 19, 13, 1000), loopRate_(loopRate), steeringAngleLimit_(steeringAngleLimit)
+        SteeringController(int pigpioId, double loopRate, double steeringAngleLimit) 
+        : pwm(pigpioId, 19, 13, 1000), loopRate_(loopRate), steeringAngleLimit_(steeringAngleLimit),
+        steeringRateFilter(1.0/loopRate, 200.0),
+        eso(1.0/loopRate, 1.0, 100.0, 0.1)
         {
 
         }
@@ -34,10 +43,14 @@ namespace melex_os
         {
             double steeringAngle = columnToBicycleScaling(encoder.readColumnRad());
             double steeringError = referenceSteeringAngle - steeringAngle;
-            double steeringRate = (steeringAngle - prevSteeringAngle)*loopRate_;
+            double steeringRate = steeringRateFilter.update((steeringAngle - prevSteeringAngle)*loopRate_);
             prevSteeringAngle = steeringAngle;
             double steeringRateError = referenceSteeringRate - steeringRate;
-            double controlSignal = kd*steeringError + kf*steeringRateError;
+            
+            //TODO: try dual output maybe (uncomment those 2 lines and modify ESO)
+            // Eigen::Vector2d output;
+            // output<<steeringAngle, steeringError;
+            double controlSignal = eso.feedbackUpdate(steeringAngle, prevControl, kd*steeringError + kf*steeringRateError);
 
             if(controlSignal > dutyCycleLimit)
             {
@@ -56,6 +69,7 @@ namespace melex_os
 
 
             pwm.setSignedDutyCycle(controlSignal);
+            prevControl = controlSignal;
         }
     };
 }

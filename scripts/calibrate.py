@@ -6,6 +6,7 @@ import numpy as np
 
 xs = []
 ys = []
+zs = []
 thetas = []
 stamps = []
 columnAngleRads = []
@@ -16,6 +17,7 @@ for topic, msg, t in rosbag.Bag('/home/tgawron/melexbags/2021-04-13-00-16-50.bag
     if topic == "/bus_rear_axis_pose":
         xs.append(msg.pose.pose.position.x)
         ys.append(msg.pose.pose.position.y)
+        zs.append(msg.pose.pose.position.z)
         orientation = msg.pose.pose.orientation
         quatList = [orientation.x, orientation.y, orientation.z, orientation.w]
         (r, p, y) = euler_from_quaternion(quatList)
@@ -82,9 +84,9 @@ for beta, t in zip(betas, tsFiltered):
 polyCoeffs = np.polyfit(columnAngleRadsCorrelated, betas, 1)
 poly = np.poly1d(polyCoeffs)
 
-# plt.plot(xs, ys)
-# plt.figure()
-# plt.plot(dts)
+plt.plot(xs, ys)
+plt.figure()
+plt.plot(zs)
 # plt.figure()
 # plt.plot(tsFiltered, columnAngleRadsCorrelated)
 plt.figure()

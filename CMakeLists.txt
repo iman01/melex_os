@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package (Eigen3 REQUIRED NO_MODULE)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -209,6 +210,6 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ##################################################################################
 
 add_executable(melex_os src/melex_driver.cpp)
-target_link_libraries(melex_os ${catkin_LIBRARIES} modbus pigpiod_if2)
+target_link_libraries(melex_os ${catkin_LIBRARIES} modbus pigpiod_if2 Eigen3::Eigen)
 add_dependencies(melex_os melex_os_generate_messages_cpp)
 
