@@ -4,7 +4,7 @@
 #include <melex_os/CarControl.h>
 
 #include <melex_os/steering_controller.hpp>
-
+#include <melex_os/mode_manager.hpp>
 #include <pigpiod_if2.h>
 
 int main(int argc, char **argv)
@@ -19,12 +19,12 @@ int main(int argc, char **argv)
 
   CarControl controlSignal;
   auto controlSub = nh.subscribe<CarControl>("/melex_os/car_control", 1, [&](const CarControl::ConstPtr& msg){ controlSignal = *msg;});
-  
+  CarState carState;
   ros::Publisher statePub = nh.advertise<CarState>("/melex_os/car_state", 1);
 
   ros::Rate rate(1.0/loopFrequencyHz);
 
-
+  bool modeState;
   int pigpioId = -1;
   try
   {
@@ -37,14 +37,21 @@ int main(int argc, char **argv)
     }
 
     SteeringController steeringController(pigpioId, loopFrequencyHz, steeringAngleLimit);    
-  
+    ModeManager modeManager(pigpioId,17,26,4,19,13,100);
     //control loop
     ROS_INFO("Melex OS driver initialized. Driver is now active.");
   
       while (ros::ok())
       {
         
+
+        ROS_INFO_STREAM("state: "<< controlSignal.autonomyEnabled << " ");
+        modeManager.setMode(controlSignal.autonomyEnabled, modeState);
         steeringController.update(controlSignal.refSteeringAngle, controlSignal.refSteeringRate, 0.5);
+
+
+        carState.autonomyEnabled = modeState;
+        statePub.publish(carState);
         rate.sleep();
       }
        
