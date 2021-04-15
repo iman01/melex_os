@@ -1,6 +1,6 @@
 <launch>
 	
-	<node name="melex_os" pkg="melex_os" type="melex_os">
+	<node name="melex_os" pkg="melex_os" type="melex_driver">
 		
 	</node>
 

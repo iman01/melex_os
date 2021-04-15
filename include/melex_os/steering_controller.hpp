@@ -3,7 +3,7 @@
 #include <melex_os/pwm.hpp>
 #include <melex_os/steering_encoder.hpp>
 #include <melex_os/digital_filters.hpp>
-#include <melex_os/adrc_eso.hpp>
+//#include <melex_os/adrc_eso.hpp>
 
 namespace melex_os
 {
@@ -50,7 +50,7 @@ namespace melex_os
             //TODO: try dual output maybe (uncomment those 2 lines and modify ESO)
             // Eigen::Vector2d output;
             // output<<steeringAngle, steeringError;
-            double controlSignal = eso.feedbackUpdate(steeringAngle, prevControl, kd*steeringError + kf*steeringRateError);
+            double controlSignal = kd*steeringError + kf*steeringRateError;//eso.feedbackUpdate(steeringAngle, prevControl, kd*steeringError + kf*steeringRateError);
 
             if(controlSignal > dutyCycleLimit)
             {

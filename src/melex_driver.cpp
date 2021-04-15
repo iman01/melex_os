@@ -13,7 +13,7 @@ int main(int argc, char **argv)
   double steeringAngleLimit = M_PI/6;
   using namespace melex_os;
 
-  ros::init(argc, argv, "melex_os");
+  ros::init(argc, argv, "melex_driver");
 
   ros::NodeHandle nh;
 
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     }
 
     SteeringController steeringController(pigpioId, loopFrequencyHz, steeringAngleLimit);    
-    ModeManager modeManager(pigpioId,17,26,4,19,13,100);
+    ModeManager modeManager(pigpioId,17,26,4);
     //control loop
     ROS_INFO("Melex OS driver initialized. Driver is now active.");
   

@@ -209,7 +209,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 # Add talker
 ##################################################################################
 
-add_executable(melex_os src/melex_driver.cpp)
-target_link_libraries(melex_os ${catkin_LIBRARIES} modbus pigpiod_if2 Eigen3::Eigen)
-add_dependencies(melex_os melex_os_generate_messages_cpp)
+add_executable(melex_driver src/melex_driver.cpp)
+target_link_libraries(melex_driver ${catkin_LIBRARIES} modbus pigpiod_if2 Eigen3::Eigen)
+add_dependencies(melex_driver melex_os_generate_messages_cpp)
 
