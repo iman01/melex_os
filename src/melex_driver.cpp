@@ -5,6 +5,8 @@
 
 #include <melex_os/steering_controller.hpp>
 #include <melex_os/mode_manager.hpp>
+#include <melex_os/speed.hpp>
+
 #include <pigpiod_if2.h>
 
 int main(int argc, char **argv)
@@ -37,7 +39,8 @@ int main(int argc, char **argv)
     }
 
     SteeringController steeringController(pigpioId, loopFrequencyHz, steeringAngleLimit);    
-    ModeManager modeManager(pigpioId,17,26,4);
+    ModeManager modeManager(pigpioId, 17, 26, 4);
+    Speed speed(pigpioId, 27);
     //control loop
     ROS_INFO("Melex OS driver initialized. Driver is now active.");
   
@@ -51,6 +54,7 @@ int main(int argc, char **argv)
 
 
         carState.autonomyEnabled = modeState;
+        carState.velocity = speed.update();
         statePub.publish(carState);
         rate.sleep();
       }

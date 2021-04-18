@@ -22,7 +22,7 @@ namespace melex_os
     LowPassFilter3 steeringRateFilter;
     
     double prevControl = 0.0;
-    SecondOrderESO eso;
+    //SecondOrderESO eso;
     
 
     //coefficient identified using procedure from scripts/calibrate.py
@@ -34,11 +34,12 @@ namespace melex_os
     public:
         SteeringController(int pigpioId, double loopRate, double steeringAngleLimit) 
         : pwm(pigpioId, 19, 13, 1000), loopRate_(loopRate), steeringAngleLimit_(steeringAngleLimit),
-        steeringRateFilter(1.0/loopRate, 200.0),
-        eso(1.0/loopRate, 1.0, 100.0, 0.1)
+        steeringRateFilter(1.0/loopRate, 200.0)
         {
 
         }
+        //eso(1.0/loopRate, 1.0, 100.0, 0.1)
+      
         void update(double referenceSteeringAngle, double referenceSteeringRate, double dutyCycleLimit)
         {
             double steeringAngle = columnToBicycleScaling(encoder.readColumnRad());
